@@ -1,108 +1,82 @@
-            Trend Micro Community License, Version 1.0, January 2024
-                    http://www.trendmicro.com/licenses/TMCL_1.0
+                   Trend Micro Community License 1.0                   
 
-             TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
-
-1. Definitions.
-   - "License" shall mean the terms and conditions for use,
-     reproduction, and distribution as defined by Sections 1 through 9
-     of this document.
-   - "Licensor" shall mean Trend Micro Incorporated, the copyright
-     owner or entity authorized by the copyright owner that is
-     granting the License.
-   - "Licensed Materials" shall mean the TrendMicro
-     Llama-TrendCybertron-8B-Instruct large language model and related
-     agent software.
-   - "You" (or "Your") shall mean an individual or Legal Entity
-     exercising permissions granted by this License.
-   - "Source" form shall mean the preferred form for making
-     modifications, including but not limited to software source code,
-     documentation source, and configuration files.
-   - "Object" form shall mean any form resulting from mechanical
-     transformation or translation of a Source form, including but not
-     limited to compiled object code, generated documentation, and
-     conversions to other media types.
-   - "Work" shall mean the work of authorship, whether in Source or
-     Object form, made available under the License, as indicated by a
-     copyright notice that is included in or attached to the work.
-   - "Derivative Works" shall mean any work, whether in Source or
-     Object form, that is based on (or derived from) the Work and for
-     which the editorial revisions, annotations, elaborations, or
-     other modifications represent, as a whole, an original work of
-     authorship.
-
-2. Grant of Copyright License. Subject to the terms and conditions of
-   this License, Licensor hereby grants to You a perpetual, worldwide,
-   non-exclusive, no-charge, royalty-free, irrevocable copyright
-   license to use, reproduce, prepare Derivative Works of, publicly
-   display, publicly perform, sublicense, and distribute the Work and
-   such Derivative Works in Source or Object form.
-
-3. Redistribution. You may reproduce and distribute copies of the Work
-   or Derivative Works thereof in any medium, with or without
-   modifications, and in Source or Object form, provided that You meet
-   the following conditions:
-   - You must give any recipients of the Work or Derivative Works a
-     copy of this License.
-   - You must cause any modified files to carry prominent notices
-     stating that You changed the files.
-   - You must retain, in the Source form of any Derivative Works that
-     You distribute, all copyright, patent, trademark, and attribution
-     notices from the Source form of the Work.
-
-4. Disclaimer of Warranty. Unless required by applicable law or agreed
-   to in writing, Licensor provides the Work (and each Contributor
-   provides its Contributions) on an "AS IS" BASIS, WITHOUT WARRANTIES
-   OR CONDITIONS OF ANY KIND, either express or implied, including,
-   without limitation, any warranties or conditions of TITLE, NON-
-   INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE.
-
-5. Limitation of Liability. In no event and under no legal theory,
-   whether in tort (including negligence), contract, or otherwise,
-   unless required by applicable law (such as deliberate and grossly
-   negligent acts) or agreed to in writing, shall any Contributor be
-   liable to You for damages, including any direct, indirect, special,
-   incidental, or consequential damages of any character arising as a
-   result of this License or out of the use or inability to use the
-   Work (including but not limited to damages for loss of goodwill,
-   work stoppage, computer failure or malfunction, or any and all
-   other commercial damages or losses), even if such Contributor has
-   been advised of the possibility of such damages.
-
-6. Accepting Warranty or Additional Liability. While redistributing
-   the Work or Derivative Works thereof, You may choose to offer, and
-   charge a fee for, acceptance of support, warranty, indemnity, or
-   other liability obligations and/or rights consistent with this
-   License. However, in accepting such obligations, You may act only
-   on Your own behalf and on Your sole responsibility, not on behalf
-   of any other Contributor, and only if You agree to indemnify,
-   defend, and hold each Contributor harmless for any liability
-   incurred by, or claims asserted against, such Contributor by reason
-   of your accepting any such warranty or additional liability.
-
-                           END OF TERMS AND CONDITIONS
-
-        APPENDIX: How to apply the Trend Micro Community License to your work.
-
-To apply the Trend Micro Community License to your work, attach the following
-boilerplate notice, with the fields enclosed by brackets "[]" replaced with
-your own identifying information. (Don't include the brackets!) The text
-should be enclosed in the appropriate comment syntax for the file format. We
-also recommend that a file or class name and description of purpose be
-included on the same "printed page" as the copyright notice for easier
-identification within third-party archives.
-
-Copyright [yyyy] [name of copyright owner]
-
-Licensed under the Trend Micro Community License, Version 1.0 (the "License");
-you may not use this file except in compliance with the License. You may
-obtain a copy of the License at
-
-    http://www.trendmicro.com/licenses/TMCL_1.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-License for the specific language governing permissions and limitations
-under the License.
+This license agreement (the “Agreement”) contains the terms and conditions
+for use of the TrendMicro Llama-TrendCybertron-8B-Instruct large language
+model (the “Model”) and related agent software (the “Software”) with which
+these terms and conditions are provided. The Model is based on the Meta
+Llama 3 model. Meta Llama 3 is licensed under the Meta Llama 3 Community
+License, Copyright Meta Platforms, Inc. All Rights Reserved.
+“Licensee” means the entity entering into this Agreement.
+“Licensed Materials” means, collectively, the Model and the Software.
+“Licensor” means Trend Micro Incorporated.
+By using or distributing any portion or element of the Licensed Materials, you
+agree to be bound by this Agreement.
+1. License Rights and Redistribution.
+   a. Grant of Rights. Licensor hereby grants you a non-exclusive, worldwide,
+   non-transferable and royalty-free limited license to use, reproduce, modify
+   and distribute the Licensed Materials, but not in connection with any product
+   or service that competes with the Licensed Materials or any product or
+   service of Licensor. Products and services compete even when provided free
+   of charge. If you market a product as a practical substitute for a product or
+   service, it competes with that product or service.
+   b. Redistribution and Use.
+      i. If you distribute or make available to others the Licensed Materials, or
+      offer a product or service that uses the Licensed Materials, you (x) must
+      provide such others with copy of this Agreement; (y) must prominently
+      display “Powered by Trend Micro’s TrendMicro Llama-TrendCybertron-
+      8B-Instruct” on the user interface, splash screen, dashboard, or similar
+      product documentation; and (z) hereby consent to Licensor listing your
+      name and product on its adopter’s web page.
+      ii. You must retain, in all copies of the Licensed Materials that you make or
+      distribute, a copy of this Agreement, or the following statement: “These
+      materials are made available under the Trend Micro Community License
+      1.0 https://github.com/trendmicro/Trend-Cybertron-AI-Agent/Trend Micro
+      Community License 1.0.pdf.” If you modify the Licensed Materials, you
+      must also indicate that you have done so.
+      iii. Your use of the Licensed Materials must comply with applicable laws
+      and regulations, and, for the benefit of Meta Platforms Inc. and its
+      affiliates, and Licensor, comply with the terms of the Llama 3 Community
+      License.
+      iv. The Licensed Materials are intended for security purposes. However,
+      you must not make any statement to any other party regarding the
+      Licensed Materials, or any products or services you provide using the
+      Licensed Materials, that would constitute a warranty by Licensor, or that
+      would reasonably be considered a warranty by Licensor.
+2. Disclaimer of Warranty. THE LICENSED MATERIALS AND ANY OUTPUT
+THEREFROM ARE PROVIDED ON AN “AS IS” BASIS, WITHOUT WARRANTIES
+OF ANY KIND, AND LICENSOR DISCLAIMS ALL WARRANTIES OF ANY KIND,
+BOTH EXPRESS AND IMPLIED, INCLUDING, WITHOUT LIMITATION, ANY
+WARRANTIES OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY, OR
+FITNESS FOR A PARTICULAR PURPOSE. YOU ARE SOLELY RESPONSIBLE
+FOR DETERMINING THE APPROPRIATENESS OF USING OR REDISTRIBUTING
+THE LICENSED MATERIALS AND ASSUME ANY RISKS ASSOCIATED WITH
+YOUR USE OF THE LICENSED MATERIALS AND ANY OUTPUT AND RESULTS.
+If this provision is unenforceable under applicable law, the licenses granted to
+you hereunder are void.
+3. Limitation of Liability. IN NO EVENT WILL LICENSOR BE LIABLE UNDER
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, TORT, NEGLIGENCE,
+PRODUCTS LIABILITY, OR OTHERWISE, ARISING OUT OF THIS AGREEMENT,
+FOR ANY LOST PROFITS OR ANY INDIRECT, SPECIAL, CONSEQUENTIAL,
+INCIDENTAL, EXEMPLARY OR PUNITIVE DAMAGES, EVEN IF LICENSOR OR
+ITS AFFILIATES HAVE BEEN ADVISED OF THE POSSIBILITY OF ANY OF THE
+FOREGOING. If this provision is unenforceable under applicable law, the
+licenses granted to you hereunder are void.
+4. Intellectual Property.
+   a. Licensor hereby reserves all rights not expressly granted in this Agreement.
+   No trademark licenses are granted under this Agreement, except to you as
+   necessary to comply with Section 1.b.
+   b. If you bring litigation or other claims against Licensor alleging that the
+   Licensed Materials constitutes infringement of intellectual property rights,
+   then any licenses granted to you under this Agreement shall terminate
+   immediately.
+5. Term and Termination. The term of this Agreement will commence upon
+your first access to the Licensed Materials and will continue unless and until
+you violate its terms, at which point your rights hereunder will terminate
+automatically. Sections 2, 3, 4, and 6 will survive any termination of this
+Agreement.
+6. Governing Law and Jurisdiction. This Agreement will be governed and
+construed under the laws of the State of California without regard to choice
+of law principles, and the UN Convention on Contracts for the International
+Sale of Goods does not apply to this Agreement. The courts of California shall
+have exclusive jurisdiction of any dispute arising out of this Agreement.
 
