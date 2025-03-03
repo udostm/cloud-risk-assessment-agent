@@ -1,8 +1,8 @@
-# Cybertron AI Agent
+# Trend Cybertron AI Agent
 
 ## Introduction
 
-Welcome to the **Cybertron AI Agent** project, an open-source initiative leveraging the Trend Micro Cybertron AI model in the NIM catalog. This project is managed by the community, and while contributors may offer support, availability can vary. Please provide detailed information about your environment and steps to reproduce your issue when opening a GitHub issue.
+Welcome to the **Trend Cybertron AI Agent** project, an open-source initiative leveraging the Trend Micro Cybertron AI model in the NIM catalog. This project is managed by the community, and while contributors may offer support, availability can vary. Please provide detailed information about your environment and steps to reproduce your issue when opening a GitHub issue.
 
 For bug reports, please [open an issue](https://github.com/trendmicro/Trend-Cybertron-AI-Agent/issues/new/choose).
 
