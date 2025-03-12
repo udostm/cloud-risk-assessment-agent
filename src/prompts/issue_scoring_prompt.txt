@@ -1,0 +1,54 @@
+Analyze the provided report or scan result to calculate the CVSS Base Metrics. Use the following updated guidelines to determine each metric value:
+
+Exploitability Metrics
+Attack Vector (AV): This metric evaluates how an attacker can exploit the vulnerability.
+Network (N): Exploitable remotely over a network, including the internet or across multiple hops (e.g., sending a crafted TCP packet).
+Adjacent (A): Exploitable within a shared local network or logical topology (e.g., Bluetooth, local subnet).
+Local (L): Requires access to the system (e.g., via terminal, SSH) or user interaction (e.g., opening a malicious file).
+Physical (P): Requires physical interaction with the device (e.g., hardware tampering, cold boot attack).
+
+Attack Complexity (AC): Evaluate the conditions beyond the attacker’s control required to exploit the vulnerability. Be conservative—only assign High if there are clearly stated external dependencies.
+Low (L): Exploitation is straightforward, with no special conditions or preparation required. Attacks are highly repeatable and reliable.
+High (H): Exploitation depends on specific conditions or external factors, such as detailed target knowledge, overcoming race conditions, or advanced preparation (e.g., man-in-the-middle setup).
+
+Privileges Required (PR): Assess the level of access an attacker needs to exploit the vulnerability. Avoid assuming privilege escalation unless explicitly stated.
+None (N): No prior access or authorization is required to exploit the vulnerability.
+Low (L): Basic user-level access is needed, allowing limited control over non-sensitive resources.
+High (H): Administrative or elevated privileges are required, granting significant control over settings or files.
+
+User Interaction (UI): Evaluate whether exploitation depends on actions by a user other than the attacker.
+None (N): No user participation is required; the attacker can exploit the vulnerability independently.
+Required (R): Exploitation depends on a user performing an action, such as opening a file or installing software.
+
+Scope (S): Determine whether exploitation affects components beyond the vulnerable component’s security authority.
+Unchanged (U): The vulnerability affects only resources within the same security authority as the vulnerable component.
+Changed (C): The vulnerability impacts resources managed by a different security authority, crossing a security boundary.
+
+Impact Metrics
+Confidentiality (C): Measure the impact of the vulnerability on restricting unauthorized access to information. Avoid overstating impact unless directly implied by the report.
+High (H): Complete loss of confidentiality or disclosure of sensitive data causing severe impact (e.g., administrator credentials, encryption keys).
+Low (L): Limited disclosure of restricted information, with minor or indirect impact.
+None (N): No unauthorized access or disclosure of information occurs.
+
+Integrity (I): Evaluate the impact of the vulnerability on the trustworthiness of information. Be conservative unless there’s clear evidence of critical consequences.
+High (H): Complete loss of integrity or malicious modification with severe consequences (e.g., unauthorized changes to critical files).
+Low (L): Limited or uncontrolled data modification with minimal impact.
+None (N): No unauthorized data modification occurs.
+
+Availability (A): Assess the impact of the vulnerability on the accessibility of the affected component. Avoid assuming high availability impact unless directly stated.
+High (H): Complete or sustained denial of access to resources, or severe degradation with serious consequences (e.g., total service disruption).
+Low (L): Partial reduction in performance or intermittent interruptions without serious impact.
+None (N): No disruption to availability occurs.
+
+Instructions for Output:
+
+Analyze the information provided to assign appropriate metric values for each CVSS component.
+Focus solely on the issue described, avoiding assumptions about unknown conditions or secondary factors not explicitly mentioned in the report.
+Assign conservative values, highlighting only issues with clear, direct impacts.
+Output the results ONLY as a CVSS vector string in the following format:
+CVSS:3.1/AV:<value>/AC:<value>/PR:<value>/UI:<value>/S:<value>/C:<value>/I:<value>/A:<value>
+
+Do not include explanations, descriptions, or any other text beyond the CVSS vector string.
+
+Scan Result:
+{ISSUE_DESCRIPTION}

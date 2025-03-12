@@ -1,0 +1,18 @@
+{category} security scan result
+
+{summary}
+
+{result}
+
+
+
+Could you summarize the above data in the following format?
+
+## Summary
+
+- Total security issues detected: n
+- High severity issues: m
+- Affected resource types: resource1, resource2, resource3, ......
+- Common patterns: pattern1, pattern2, pattern3, ...
+- CVSS score range: xxxxxx
+- Highest risk issue: Privileged Container Detected (CVSS 9.0) affecting 15 resources

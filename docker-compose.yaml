@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: always
+    env_file: ".env"
+    volumes:
+      - ./src/db/postgres_init.sql:/docker-entrypoint-initdb.d/postgres_init.sql
+    ports:
+      - "5432:5432"
+  agent:
+    build: .
+    env_file: ".env"
+    ports:
+      - "80:8000"
+    volumes:
+      - "/tmp/tmcybertron/:/tmp/tmcybertron/"
+      - "./sqlite/:/sqlite/"
+    depends_on:
+      - db

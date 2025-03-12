@@ -1,0 +1,45 @@
+{result}
+
+Please analyze and provide insights on the following top 5 security issues:
+
+1. **System Risk Analysis**:
+   - Conduct a thorough risk assessment for each issue, outlining the potential impact on the system if not addressed.
+   - Describe possible attack scenarios that could exploit these vulnerabilities.
+   - Cite real-world examples of similar attacks to highlight the urgency and relevance of these issues.
+
+2. **Detailed Remediation Steps**:
+   - Provide comprehensive, step-by-step instructions for resolving each issue.
+   - Include relevant code snippets or configuration changes where applicable to illustrate the remediation process.
+   - Offer alternative solutions or mitigations if direct remediation is impractical or impossible.
+
+3. **Estimate the effort required for remediation**:
+   - Time required for each fix.
+   - Manpower needed.
+   - Additional tools or configurations required or potential risks of fixing effort.
+
+
+Issue Output Example:
+
+### **Issue Name**
+
+**Resource Name**
+List impact resource name here
+
+**System Risk**
+describe the issue risk assessment here...
+
+**Remediation Steps:**
+provide step by step remedation
+
+**Code Snippet:**
+```
+terraform or cli sample here
+```
+**Alternative Solution**
+
+
+**Effort estimation**
+- Time Required: N-M hours
+- Manpower Needed: N-M people
+- Additional Tools or Configurations Required: ex: AW WAF, CloudFront
+- Potential Risks of Fixing Effort: ex: major version package upgrade, full test required.

@@ -1,0 +1,7 @@
+scan_config:
+  image:
+    image_id: "python:3.12"
+  code:
+    folder: "/Users/hank_yang/Project/terraform-aws-common"
+  k8s:
+    config_path: "/path/to/k8s/config"

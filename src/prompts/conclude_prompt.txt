@@ -1,0 +1,11 @@
+Task: Provide a helpful conclusion for the customer, including:
+- A summary of the security posture.
+- A overall risk score from 1 (low) to 10  (high)
+
+<output>
+## Conclusion:
+
+Your current XXX environment has **Security risk description**, which pose serious security risks.
+
+**Risk score**: N  ( 1-low , 10-high )
+</output>
