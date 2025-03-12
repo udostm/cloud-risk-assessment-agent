@@ -34,6 +34,8 @@ AWS_SECURITY_TOKEN=
 
 ## Resource Setup for Scanning
 
+Locate the source code, container under specific folder for scan. More detail of code preparation please see [Trivy code scan guide](https://trivy.dev/v0.47/docs/coverage/language/)
+
 ### AWS Permissions
 
 Ensure AWS permissions are properly configured:
