@@ -20,9 +20,11 @@ Before you begin, ensure you have the following installed on your system:
 - **Make**: For running make commands.
 - **Docker**: Version 2 or later.
 
-Set up your inference endpoint using [Huggingface](https://huggingface.co/trendmicro-ailab/Llama-Primus-Merged?local-app=vllm):
+Set up your inference endpoint using [Huggingface](https://huggingface.co/trendmicro-ailab/Llama-Primus-Merged):
+- **Recommended Inference Endpoint**: [SGLang](https://docs.sglang.ai/)
 - **Recommended GPU**: At least L40s
-- **Context Length**: 128k tokens - [Setup Guide](https://docs.vllm.ai/en/latest/serving/engine_args.html) (use --max-model-len parameter)
+- **Context Length**: 128k tokens
+* [SGLang Setup Guide](https://github.com/sgl-project/sglang/blob/c550e52f8bcaaafeeaa41e5aac943a767f4d20b2/docs/references/nvidia_jetson.md) (use --contex-length parameter)
 
 ## Installation
 
