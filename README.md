@@ -27,7 +27,7 @@ Set up your inference endpoint using [Huggingface](https://huggingface.co/trendm
 * [SGLang Setup Guide](https://docs.sglang.ai/backend/server_arguments.html#model-and-tokenizer) (use --contex-length parameter)
 
 ```bash
-python -m sglang.launch_server --model-path trendmicro-ailab/Llama-Primus-Merged --port 8000 --host 0.0.0.0 --chat-template llama-3-instruct --context-length 131072 --max-prefill-tokens 131072 --max-total-tokens 131072
+python -m sglang.launch_server --model-path trendmicro-ailab/Llama-Primus-Merged --port 8000 --host 0.0.0.0 --context-length 131072 --max-prefill-tokens 131072 --max-total-tokens 131072
 ```
 
 ## Installation
