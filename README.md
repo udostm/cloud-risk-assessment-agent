@@ -45,11 +45,12 @@ git clone https://github.com/trendmicro/cloud-risk-assessment-agent
 ### 2. Prepare the Environment File
 
 Create a new `.env` file in the root directory of the repository and copy the following contents into it:
+Note: remember replace your OpenAI compatible API base, model and key.
 
 ```plaintext
-OPENAI_API_BASE=https://huggingface.co/trendmicro-ailab/Llama-Primus-Merged?local-app=vllm
-OPENAI_API_KEY="trendmicro-ailab/Llama-Primus-Merged"
-OPENAI_MODEL=Primus-Christmas-128k
+OPENAI_API_BASE="http://localhost:8000/"
+OPENAI_API_KEY="YOUR OPENAI API KEY"
+OPENAI_MODEL="Llama-Primus-Merged"
 SERVICE_HOST=http://localhost
 POSTGRES_USER=tmcybertron
 POSTGRES_PASSWORD=tmcybertron
