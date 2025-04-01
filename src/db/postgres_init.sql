@@ -49,7 +49,10 @@ CREATE TABLE IF NOT EXISTS steps (
     "generation" JSONB,
     "showInput" TEXT,
     "language" TEXT,
-    "indent" INT
+    "indent" INT,
+    "defaultOpen" BOOLEAN,
+    FOREIGN KEY ("threadId") REFERENCES threads("id") ON DELETE CASCADE
+
 );
 
 CREATE TABLE IF NOT EXISTS elements (
@@ -65,7 +68,9 @@ CREATE TABLE IF NOT EXISTS elements (
     "page" INT,
     "language" TEXT,
     "forId" UUID,
-    "mime" TEXT
+    "mime" TEXT,
+    "props" JSONB,
+    FOREIGN KEY ("threadId") REFERENCES threads("id") ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS feedbacks (
@@ -73,7 +78,8 @@ CREATE TABLE IF NOT EXISTS feedbacks (
     "forId" UUID NOT NULL,
     "threadId" UUID NOT NULL,
     "value" INT NOT NULL,
-    "comment" TEXT
+    "comment" TEXT,
+    FOREIGN KEY ("threadId") REFERENCES threads("id") ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS blob_storage (
