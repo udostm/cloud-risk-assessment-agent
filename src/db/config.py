@@ -1,5 +1,5 @@
 import json
-
+import os
 # Common SQL schema for the results table
 RESULTS_TABLE_SCHEMA = """
 CREATE TABLE IF NOT EXISTS results (
@@ -217,4 +217,4 @@ SAMPLE_DATA = [
 ]
 
 # Default database path
-DEFAULT_DB_PATH = "/sqlite/chainlit.db"
+DEFAULT_DB_PATH = os.getenv("DEFAULT_DB_PATH", "/sqlite/chainlit.db")
