@@ -4,7 +4,8 @@ from sqlalchemy import create_engine
 
 import chainlit.data as cl_data
 from chainlit.data.sql_alchemy import SQLAlchemyDataLayer
-from src.db.postgres_storage import PostgreSQLStorageClient
+from chainlit.logger import logger
+from src.db.sqlite_storage import SQLiteStorageClient
 from src.db.config import DEFAULT_DB_PATH
 
 class AppContext:
@@ -19,7 +20,7 @@ class AppContext:
         """Check if database file has been modified and reconnect if needed"""
         try:
             if not os.path.exists(self.db_path):
-                print(f"Database file not found: {self.db_path}")
+                logger.error(f"Database file not found: {self.db_path}")
                 return False
             
             current_modified = os.path.getmtime(self.db_path)
@@ -35,7 +36,7 @@ class AppContext:
                 return True
             return False
         except (sqlite3.Error, OSError) as e:
-            print(f"Database reconnection error: {e}")
+            logger.error(f"Database reconnection error: {e}")
             return False
 
     def get_connection(self):
@@ -50,31 +51,20 @@ def setup_database_connections():
     """
     Configure and return database connections based on environment
     """
-    # Determine if using PostgreSQL (from environment) or SQLite (fallback)
-    use_postgres = all([
-        os.getenv("POSTGRES_USER"),
-        os.getenv("POSTGRES_PASSWORD")
-    ])
 
     app_context = AppContext()
     # Initial connection
     app_context.check_and_reconnect()
 
-    if use_postgres:
-        # PostgreSQL setup
-        dbhost = os.getenv("POSTGRES_HOST", "db")
-        dbport = os.getenv("POSTGRES_PORT", "5432")
-        dbuser = os.getenv("POSTGRES_USER")
-        dbpassword = os.getenv("POSTGRES_PASSWORD")
-        conn_str = f"{dbuser}:{dbpassword}@{dbhost}:{dbport}"
-
-        # Create storage client for PostgreSQL
-        app_context.storage_client = PostgreSQLStorageClient(database_url=f"postgresql://{conn_str}")
-
-        # Set up data layer
-        cl_data._data_layer = SQLAlchemyDataLayer(
-            conninfo=f"postgresql+asyncpg://{conn_str}",
-            storage_provider=app_context.storage_client
-        )
+    # SQLite setup
+    conn_str = f"sqlite+aiosqlite:///{app_context.db_path}"
+    app_context.storage_client = SQLiteStorageClient(database_path=app_context.db_path)
+    
+    # Set up data layer
+    logger.info(f"Using database connection: {conn_str}")
+    cl_data._data_layer = SQLAlchemyDataLayer(
+        conninfo=conn_str,
+        storage_provider=app_context.storage_client
+    )
 
     return app_context
