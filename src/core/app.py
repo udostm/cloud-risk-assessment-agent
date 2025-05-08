@@ -1,23 +1,26 @@
 from io import StringIO
 import json
 import os
-from typing import Dict, Literal, Optional
+from typing import Dict, Literal, Optional, Any
 import pandas as pd
 import sqlite3
 
 # LangChain imports
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
 from langchain_core.prompts import PromptTemplate
 from langgraph.graph import StateGraph, END, START
 from langgraph.types import Command
 from langgraph.graph.message import MessagesState
 from langgraph.checkpoint.memory import MemorySaver
 from langchain.schema.runnable.config import RunnableConfig
+from langgraph.prebuilt import create_react_agent
 
 # Chainlit imports
 import chainlit as cl
 import chainlit.data as cl_data
 from chainlit.data.sql_alchemy import SQLAlchemyDataLayer
+from mcp import ClientSession
+from mcp.types import CallToolResult, TextContent
 
 # Local imports
 from src.utils.utils import token_count, read_prompt, read_file_prompt, messages_token_count, load_chat_model, get_latest_human_message, reasoning_prompt
@@ -328,9 +331,39 @@ async def provide_explanation(state: AgentState):
         if len(formatted_prompt) > 80000:
             formatted_prompt = formatted_prompt[:80000]
 
-        # Get response from the model
-        explanation_response = await model.ainvoke([HumanMessage(content=formatted_prompt)])
-        
+        # Get tools from all MCP connections
+        mcp_tools = cl.user_session.get("mcp_tools", {})
+        all_tools = [tool for connection_tools in mcp_tools.values() for tool in connection_tools]
+        model_with_tools = model.bind_tools(tools=all_tools, tool_choice="auto")
+        explanation_response = ""
+        messages_history = [HumanMessage(content=formatted_prompt)]
+        while True:
+            # Get response from the model
+            response = await model_with_tools.ainvoke(messages_history)
+            if response.tool_calls:
+                # Add the assistant message with tool calls to history
+                messages_history.append(AIMessage(content=response.content, tool_calls=response.tool_calls))
+ 
+                # Process each tool call and add tool responses to history
+                for tool_call in response.tool_calls:
+                    name = tool_call["name"]
+                    arguments = tool_call["args"]
+                    tool_result = await mcp_call_tool(name, arguments)
+                    tool_result_text = ""
+                    for content_item in tool_result.content:
+                        if isinstance(content_item, TextContent):
+                            tool_result_text += f"{(content_item.text)}\n"
+                    print(f"provide_explanation: tool_result_text = {tool_result_text}")
+                    
+                    # Add the tool response to history
+                    messages_history.append(ToolMessage(content=tool_result_text, tool_call_id=tool_call["id"]))
+            else:
+                # If there are no tool calls, just add the assistant response
+                messages_history.append(AIMessage(content=response.content))
+                explanation_response = response.content
+                break
+        print(f"Final explanation response: {explanation_response}")
+
         # Clear state for next interaction
         return Command(
             update={
@@ -486,7 +519,52 @@ async def on_chat_resume(thread):
                 state["messages"] = state_messages
                 graph.update_state(config, state)
 
+@cl.on_mcp_connect
+async def on_mcp(connection, session: ClientSession):
+    # List available tools
+    result = await session.list_tools()
 
+    # Process tool metadata
+    tools = [{
+        "name": t.name,
+        "description": t.description,
+        "input_schema": t.inputSchema,
+    } for t in result.tools]
+    
+    # Store tools for later use
+    mcp_tools = cl.user_session.get("mcp_tools", {})
+    mcp_tools[connection.name] = tools
+    cl.user_session.set("mcp_tools", mcp_tools)
+
+@cl.on_mcp_disconnect
+async def on_mcp_disconnect(name: str, session: ClientSession):
+    mcp_tools = cl.user_session.get("mcp_tools", {})
+    if name in mcp_tools:
+        del mcp_tools[name]
+        cl.user_session.set("mcp_tools", mcp_tools)
+
+@cl.step(type="tool")
+async def mcp_call_tool(tool_name: str, tool_input: Dict[str, Any]):
+    print(f"mcp_call_tool: name = {tool_name}, input = {tool_input}")
+    mcp_name = None
+    mcp_tools = cl.user_session.get("mcp_tools", {})
+
+    for conn_name, tools in mcp_tools.items():
+        if any(tool["name"] == tool_name for tool in tools):
+            mcp_name = conn_name
+            break
+
+    if not mcp_name:
+        return {"error": f"Tool '{tool_name}' not found in any connected MCP server"}
+
+    mcp_session, _ = cl.context.session.mcp_sessions.get(mcp_name)
+
+    try:
+        result = await mcp_session.call_tool(tool_name, tool_input)
+        return result
+    except Exception as e:
+        return {"error": f"Error calling tool '{tool_name}': {str(e)}"}
+    
 
 cust_router = APIRouter()
 
