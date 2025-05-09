@@ -74,6 +74,7 @@ class AgentState(MessagesState):
     result_text: Optional[str] = None
     top5: Optional[str] = None
     dataframe: Optional[str] = None
+    tool_message: Optional[str] = None
 
 
 
@@ -143,14 +144,14 @@ async def classify_user_intent(state: AgentState):
             else:
                 return Command(
                     update={"intention": res, "user_query": None},
-                    goto="reason"
+                    goto="mcp_tool"
                 )
         except json.JSONDecodeError:
             # Handle invalid JSON response
             print("Failed to parse intent classification response")
             return Command(
                 update={"user_query": query},
-                goto="reason"
+                goto="mcp_tool"
             )
         
 async def invoke_llm(state: AgentState):
@@ -292,15 +293,72 @@ async def execute_db_query(state: AgentState) -> Command[Literal["reason"]]:
                 "query_results": results_str, 
                 "messages": messages + [SystemMessage(content="Query executed successfully.")]
             },
-            goto="reason"
+            goto="mcp_tool"
         )
 
     except Exception as e:
         print(f"Error during query execution: {e}\n\n")
         return Command(
             update={"user_query": user_query},
-            goto="reason"
+            goto="mcp_tool"
         )
+
+async def execute_mcp_tool(state: AgentState) -> Command[Literal["reason"]]:
+    """
+    Execute a tool call based on the user's question
+    """
+    tool_message = ""
+    try:
+        user_query = state.get("user_query", "")
+        sql_query = state.get("sql_query", "")
+        query_results = state.get("query_results", "")
+
+        # Get tools from all MCP connections
+        mcp_tools = cl.user_session.get("mcp_tools", {})
+        all_tools = ""
+        for conn_name, tools in mcp_tools.items():
+            for tool in tools:
+                all_tools += f"Tool Name: {tool['name']}\n"
+                all_tools += f"Description: {tool['description']}\n"
+                all_tools += f"Schema: {tool['input_schema']}\n"
+
+        # Format the mcp prompt
+        template = read_prompt("mcp")
+        prompt = PromptTemplate(
+            template=template,
+            input_variables=["tools", "input", "sql_query", "scan_results"]
+        )
+        formatted_prompt = prompt.format(
+            tools=all_tools, 
+            input=user_query,
+            sql_query=sql_query,
+            scan_results=query_results
+        )
+        messages_history = [HumanMessage(content=formatted_prompt)]
+        response = await model.ainvoke(messages_history)
+        json_response = response.content.replace("```json", "").replace("```", "")
+
+        try:
+            tool_calls = json.loads(json_response)
+            for tool_call in tool_calls:
+                name = tool_call["name"]
+                arguments = tool_call["arguments"]
+                tool_result = await mcp_call_tool(name, arguments)
+                tool_result_text = ""
+                for content_item in tool_result.content:
+                    if isinstance(content_item, TextContent):
+                        tool_result_text += f"{(content_item.text)}\n"
+                tool_message = tool_result_text
+        except Exception as e:
+            print(f"execute_mcp_tool: Error processing response: {e}, response: {json_response}")
+        
+    except Exception as e:
+        print(f"execute_mcp_tool: Error during tool execution: {e}")
+    
+    return Command(
+        update={"tool_message": tool_message},
+        goto="reason"
+    )
 
 async def provide_explanation(state: AgentState):
     """
@@ -310,6 +368,7 @@ async def provide_explanation(state: AgentState):
         user_query = state.get("user_query", "")
         sql_query = state.get("sql_query", "")
         query_results = state.get("query_results", "")
+        tool_message = state.get("tool_message", "")
 
         # If the user query is missing, default to the latest human message
         if not user_query:
@@ -319,50 +378,21 @@ async def provide_explanation(state: AgentState):
         template = read_prompt("explanation")
         prompt = PromptTemplate(
             template=template,
-            input_variables=["question", "sql_query", "scan_results"]
+            input_variables=["question", "sql_query", "scan_results", "tool_message"]
         )
         formatted_prompt = prompt.format(
             question=user_query, 
             sql_query=sql_query, 
-            scan_results=query_results
+            scan_results=query_results,
+            tool_message=tool_message
         )
         
         # Limit prompt size to prevent token overflow
         if len(formatted_prompt) > 80000:
             formatted_prompt = formatted_prompt[:80000]
 
-        # Get tools from all MCP connections
-        mcp_tools = cl.user_session.get("mcp_tools", {})
-        all_tools = [tool for connection_tools in mcp_tools.values() for tool in connection_tools]
-        model_with_tools = model.bind_tools(tools=all_tools, tool_choice="auto")
-        explanation_response = ""
-        messages_history = [HumanMessage(content=formatted_prompt)]
-        while True:
-            # Get response from the model
-            response = await model_with_tools.ainvoke(messages_history)
-            if response.tool_calls:
-                # Add the assistant message with tool calls to history
-                messages_history.append(AIMessage(content=response.content, tool_calls=response.tool_calls))
- 
-                # Process each tool call and add tool responses to history
-                for tool_call in response.tool_calls:
-                    name = tool_call["name"]
-                    arguments = tool_call["args"]
-                    tool_result = await mcp_call_tool(name, arguments)
-                    tool_result_text = ""
-                    for content_item in tool_result.content:
-                        if isinstance(content_item, TextContent):
-                            tool_result_text += f"{(content_item.text)}\n"
-                    print(f"provide_explanation: tool_result_text = {tool_result_text}")
-                    
-                    # Add the tool response to history
-                    messages_history.append(ToolMessage(content=tool_result_text, tool_call_id=tool_call["id"]))
-            else:
-                # If there are no tool calls, just add the assistant response
-                messages_history.append(AIMessage(content=response.content))
-                explanation_response = response.content
-                break
-        print(f"Final explanation response: {explanation_response}")
+        response = await model.ainvoke([HumanMessage(content=formatted_prompt)])
+        explanation_response = response.content
 
         # Clear state for next interaction
         return Command(
@@ -381,6 +411,7 @@ async def provide_explanation(state: AgentState):
                 "user_query": None,
                 "sql_query": None,
                 "query_results": None,
+                "tool_message": None,
                 "messages": state["messages"] + [
                     SystemMessage(content="An error occurred while generating the explanation. Please try again.")
                 ]
@@ -398,6 +429,7 @@ builder.add_node("intent", classify_user_intent)
 builder.add_node("querydb", execute_db_query)
 builder.add_node("summary", generate_summary_report)
 builder.add_node("insight", generate_insights)
+builder.add_node("mcp_tool", execute_mcp_tool)
 builder.add_node("conclude", finalize_conclusion)
 builder.add_node("reason", provide_explanation)
 builder.add_node("report", invoke_llm)
@@ -409,6 +441,8 @@ builder.add_edge(START, "intent")
 builder.add_edge("summary", "insight")
 builder.add_edge("insight", "conclude")
 builder.add_edge("querydb", "reason")
+builder.add_edge("querydb", "mcp_tool")
+builder.add_edge("mcp_tool", "reason")
 builder.add_edge("conclude", END)
 builder.add_edge("reason", END)
 
