@@ -106,6 +106,13 @@ def parse_report_command(input_string: str) -> str:
         
     return argument
 
+def is_mcp_tool_available() -> bool:
+    """
+    Check if any MCP tools are available.
+    """
+    mcp_tools = cl.user_session.get("mcp_tools", {})
+    return bool(mcp_tools)
+
 #-------------------------------
 # Node Functions
 #-------------------------------
@@ -144,14 +151,14 @@ async def classify_user_intent(state: AgentState):
             else:
                 return Command(
                     update={"intention": res, "user_query": None},
-                    goto="mcp_tool"
+                    goto="mcp_tool" if is_mcp_tool_available() else "reason"
                 )
         except json.JSONDecodeError:
             # Handle invalid JSON response
             print("Failed to parse intent classification response")
             return Command(
                 update={"user_query": query},
-                goto="mcp_tool"
+                goto="mcp_tool" if is_mcp_tool_available() else "reason"
             )
         
 async def invoke_llm(state: AgentState):
@@ -293,14 +300,14 @@ async def execute_db_query(state: AgentState) -> Command[Literal["reason"]]:
                 "query_results": results_str, 
                 "messages": messages + [SystemMessage(content="Query executed successfully.")]
             },
-            goto="mcp_tool"
+            goto="mcp_tool" if is_mcp_tool_available() else "reason"
         )
 
     except Exception as e:
         print(f"Error during query execution: {e}\n\n")
         return Command(
             update={"user_query": user_query},
-            goto="mcp_tool"
+            goto="mcp_tool" if is_mcp_tool_available() else "reason"
         )
 
 async def execute_mcp_tool(state: AgentState) -> Command[Literal["reason"]]:
@@ -309,12 +316,15 @@ async def execute_mcp_tool(state: AgentState) -> Command[Literal["reason"]]:
     """
     tool_message = ""
     try:
-        user_query = state.get("user_query", "")
-        sql_query = state.get("sql_query", "")
-        query_results = state.get("query_results", "")
-
         # Get tools from all MCP connections
         mcp_tools = cl.user_session.get("mcp_tools", {})
+        if not mcp_tools:
+            print("execute_mcp_tool: No MCP tools available.")
+            return Command(
+                update={"tool_message": ""},
+                goto="reason"
+            )
+        
         all_tools = ""
         for conn_name, tools in mcp_tools.items():
             for tool in tools:
@@ -322,6 +332,10 @@ async def execute_mcp_tool(state: AgentState) -> Command[Literal["reason"]]:
                 all_tools += f"Description: {tool['description']}\n"
                 all_tools += f"Schema: {tool['input_schema']}\n"
 
+        user_query = state.get("user_query", "")
+        sql_query = state.get("sql_query", "")
+        query_results = state.get("query_results", "")
+    
         # Format the mcp prompt
         template = read_prompt("mcp")
         prompt = PromptTemplate(
