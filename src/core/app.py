@@ -120,6 +120,8 @@ async def classify_user_intent(state: AgentState):
     """
     Classify the user's query as either a report request or a regular question.
     """
+    print("--------------do_intent---------------")
+
     messages = state["messages"]
     query = get_latest_human_message(messages)
     print(f"\n\nUSER QUERY: {query} \n")
@@ -261,6 +263,7 @@ async def execute_db_query(state: AgentState) -> Command[Literal["reason"]]:
     """
     Execute a database query based on the user's question
     """
+    print("--------------do_querydb---------------")
     messages = state["messages"]
     user_query = state["user_query"]
     
@@ -300,20 +303,22 @@ async def execute_db_query(state: AgentState) -> Command[Literal["reason"]]:
                 "query_results": results_str, 
                 "messages": messages + [SystemMessage(content="Query executed successfully.")]
             },
-            goto="mcp_tool" if is_mcp_tool_available() else "reason"
+            goto="mcp_tool"
         )
 
     except Exception as e:
         print(f"Error during query execution: {e}\n\n")
         return Command(
             update={"user_query": user_query},
-            goto="mcp_tool" if is_mcp_tool_available() else "reason"
+            goto="mcp_tool"
         )
 
 async def execute_mcp_tool(state: AgentState) -> Command[Literal["reason"]]:
     """
     Execute a tool call based on the user's question
     """
+    print("--------------do_mcp_tool---------------")
+
     tool_message = ""
     try:
         # Get tools from all MCP connections
@@ -350,9 +355,10 @@ async def execute_mcp_tool(state: AgentState) -> Command[Literal["reason"]]:
         )
         messages_history = [HumanMessage(content=formatted_prompt)]
         response = await model.ainvoke(messages_history)
-        json_response = response.content.replace("```json", "").replace("```", "")
+        print(f"execute_mcp_tool: response = {response.content}\n\n")
 
         try:
+            json_response = response.content.replace("```json", "").replace("```", "")
             tool_calls = json.loads(json_response)
             for tool_call in tool_calls:
                 name = tool_call["name"]
@@ -378,6 +384,8 @@ async def provide_explanation(state: AgentState):
     """
     Generate an explanation based on query results
     """
+    print("--------------do_reason---------------")
+
     try:
         user_query = state.get("user_query", "")
         sql_query = state.get("sql_query", "")
@@ -405,7 +413,25 @@ async def provide_explanation(state: AgentState):
         if len(formatted_prompt) > 80000:
             formatted_prompt = formatted_prompt[:80000]
 
-        response = await model.ainvoke([HumanMessage(content=formatted_prompt)])
+        response = await model.ainvoke([
+            SystemMessage(content=""" You are a cybersecurity expert. Your task is to provide detailed explanations based on the user's question and the context provided.
+            - Requirements:
+                1. If there is no relevant context (e.g., DB and MCP data do not align with the user's question), ignore the context and answer the user's question directly based on your knowledge.
+                2. Provide a detailed and natural response that directly addresses the question, ensuring clarity and relevance.
+                3. If context (scan results) is provided and relevant, integrate it into the answer to enhance the response.
+                4. Use markdown formatting for readability:
+                    a. Use ### for headings and subheadings.
+                    b. Use tables for structured data (max 10 rows for readability).
+                    c. Include bullet points or numbered lists to explain key details or supplement the table.
+                5. Include specific resource names or identifiers where relevant, but limit examples to a manageable number for clarity.
+                6. Supplement the structured data with brief explanations to enhance understanding.
+                7. Avoid duplicates: Ensure entries in tables, lists, or explanations are unique and concise.
+                8. For questions that are irrelevant or out of scope:
+                    Provide an appropriate response or redirect the user to ask questions relevant to cybersecurity or the intended context of the interaction.
+                    If clarification is needed, politely ask the user to refine or refocus their query."""
+            ),
+            HumanMessage(content=formatted_prompt)
+        ])
         explanation_response = response.content
 
         # Clear state for next interaction
@@ -454,7 +480,6 @@ REASONING_NODE = ["reason", "report", "summary", "insight", "assessment", "remed
 builder.add_edge(START, "intent")
 builder.add_edge("summary", "insight")
 builder.add_edge("insight", "conclude")
-builder.add_edge("querydb", "reason")
 builder.add_edge("querydb", "mcp_tool")
 builder.add_edge("mcp_tool", "reason")
 builder.add_edge("conclude", END)
