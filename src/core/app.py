@@ -353,7 +353,10 @@ async def execute_mcp_tool(state: AgentState) -> Command[Literal["reason"]]:
             sql_query=sql_query,
             scan_results=query_results
         )
-        messages_history = [HumanMessage(content=formatted_prompt)]
+        messages_history = [
+            SystemMessage(content=read_file_prompt("./src/prompts/mcp_system_prompt.txt")),
+            HumanMessage(content=formatted_prompt)
+        ]
         response = await model.ainvoke(messages_history)
         print(f"execute_mcp_tool: response = {response.content}\n\n")
 
