@@ -66,7 +66,6 @@ def header_auth_callback(headers: Dict) -> Optional[cl.User]:
 #-------------------------------
 class AgentState(MessagesState):
     """State maintained throughout the agent's workflow"""
-    intention: Optional[str] = None
     user_query: Optional[str] = None
     sql_query: Optional[str] = None
     query_results: Optional[str] = None
@@ -144,17 +143,15 @@ async def classify_user_intent(state: AgentState):
         try:
             res = json.loads(intent_response.content)
             score = res.get("Score", 0)
-            
+            next_node = "reason"
             if score > 30:
-                return Command(
-                    update={"intention": res, "user_query": query},
-                    goto="querydb"
-                )
-            else:
-                return Command(
-                    update={"intention": res, "user_query": None},
-                    goto="mcp_tool" if is_mcp_tool_available() else "reason"
-                )
+                next_node = "querydb"
+            elif is_mcp_tool_available():
+                next_node = "mcp_tool"
+            return Command(
+                update={"user_query": query},
+                goto=next_node
+            )
         except json.JSONDecodeError:
             # Handle invalid JSON response
             print("Failed to parse intent classification response")
