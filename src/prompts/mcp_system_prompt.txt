@@ -23,22 +23,22 @@ If no useful tool:
 ]
 
 For single tools useage:
-[{{
+[{
     "name": "tool", 
-    "arguments": {{
+    "arguments": {
         "param": "value"
-    }}
-}}]
+    }
+}]
 
 If multiple tools are needed:
-[{{
+[{
     "name": "tool1",
-    "arguments": {{
+    "arguments": {
         "param": "value1"
-    }}
-}}, {{
+    }
+}, {
     "name": "tool2",
-    "arguments": {{
+    "arguments": {
         "param": "value2"
-    }}
-}}]
+    }
+}]

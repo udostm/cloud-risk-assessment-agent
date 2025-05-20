@@ -316,6 +316,8 @@ async def execute_mcp_tool(state: AgentState) -> Command[Literal["reason"]]:
     """
     print("--------------do_mcp_tool---------------")
 
+    messages = state["messages"]
+
     tool_message = ""
     try:
         # Get tools from all MCP connections
@@ -354,7 +356,7 @@ async def execute_mcp_tool(state: AgentState) -> Command[Literal["reason"]]:
             SystemMessage(content=read_file_prompt("./src/prompts/mcp_system_prompt.txt")),
             HumanMessage(content=formatted_prompt)
         ]
-        response = await model.ainvoke(messages_history)
+        response = await model.ainvoke(messages + messages_history)
         print(f"execute_mcp_tool: response = {response.content}\n\n")
 
         try:

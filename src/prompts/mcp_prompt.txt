@@ -2,6 +2,8 @@
 You have access to the following tools:
 {tools}
 
+If the SQL query returns multiple items, distribute these items across multiple tools and limit the query to only one item per tool. For tools related to semantic search, the input should be specific and not a broad question, and they should only retrieve one specific result at a time.
+
 - User Question: 
 {input}
 
